@@ -29,7 +29,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/et-nik/binngo/binn"
+	"github.com/et-nik/binngo"
 )
 
 func main() {
@@ -46,7 +46,7 @@ func main() {
 	}
 	items := []string{}
 
-	err := binn.Unmarshal(binnBinary, &items)
+	err := binngo.Unmarshal(binnBinary, &items)
 	if err != nil {
 		fmt.Println("error:", err)
 	}
@@ -63,7 +63,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"github.com/et-nik/binngo/binn"
+	"github.com/et-nik/binngo"
 )
 
 func main() {
@@ -75,7 +75,7 @@ func main() {
 		"value",
 	}
 
-	binnBinary, err := binn.Marshal(structure)
+	binnBinary, err := binngo.Marshal(structure)
 	if err != nil {
 		fmt.Println("error:", err)
 	}

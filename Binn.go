@@ -1,4 +1,4 @@
-package binn
+package binngo
 
 import (
 	"github.com/et-nik/binngo/decode"
