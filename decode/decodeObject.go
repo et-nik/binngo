@@ -57,7 +57,7 @@ func readObjectKey(reader io.Reader) (string, readLen, error) {
 		return "", 0, err
 	}
 
-	sz := int(DecodeUint8(bsz))
+	sz := int(Uint8(bsz))
 
 	var bkey = make([]byte, sz)
 
@@ -66,5 +66,5 @@ func readObjectKey(reader io.Reader) (string, readLen, error) {
 		return "", 0, err
 	}
 
-	return DecodeString(bkey), readLen(sz + 1), nil
+	return String(bkey), readLen(sz + 1), nil
 }

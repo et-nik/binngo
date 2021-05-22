@@ -20,7 +20,7 @@ func (se *structEncoder) encode(v reflect.Value) ([]byte, error) {
 
 	for i := 0; i < v.NumField(); i++ {
 		dataBytes = append(dataBytes,
-			EncodeString(se.t.Field(i).Name)...
+			String(se.t.Field(i).Name)...,
 		)
 
 		encodeValue := loadEncodeFunc(v.Field(i).Type())
@@ -34,11 +34,11 @@ func (se *structEncoder) encode(v reflect.Value) ([]byte, error) {
 
 	bytes := []byte{}
 
-	typeBytes := EncodeUint8(binn.ObjectType)
-	countBytes := EncodeSize(v.NumField(), false)
+	typeBytes := Uint8(binn.ObjectType)
+	countBytes := Size(v.NumField(), false)
 
 	bytes = append(bytes, typeBytes...)
-	bytes = append(bytes, EncodeSize(len(typeBytes) + len(dataBytes) + len(countBytes), true)...)
+	bytes = append(bytes, Size(len(typeBytes)+len(dataBytes)+len(countBytes), true)...)
 	bytes = append(bytes, countBytes...)
 	bytes = append(bytes, dataBytes...)
 

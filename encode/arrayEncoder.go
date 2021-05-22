@@ -29,11 +29,11 @@ func (ae *arrayEncoder) encode(v reflect.Value) ([]byte, error) {
 
 	bytes := []byte{}
 
-	typeBytes := EncodeUint8(binn.ListType)
-	countBytes := EncodeSize(v.Len(), false)
+	typeBytes := Uint8(binn.ListType)
+	countBytes := Size(v.Len(), false)
 
 	bytes = append(bytes, typeBytes...)
-	bytes = append(bytes, EncodeSize(len(typeBytes) + len(dataBytes) + len(countBytes), true)...)
+	bytes = append(bytes, Size(len(typeBytes)+len(dataBytes)+len(countBytes), true)...)
 	bytes = append(bytes, countBytes...)
 	bytes = append(bytes, dataBytes...)
 

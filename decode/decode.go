@@ -2,15 +2,13 @@ package decode
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"reflect"
 	"sync"
 
-	"github.com/et-nik/binngo/binn"
-
 	"github.com/cstockton/go-conv"
+	"github.com/et-nik/binngo/binn"
 )
 
 const (
@@ -19,7 +17,7 @@ const (
 
 type decodeFunc func(reader io.Reader, v interface{}) error
 
-var decoderCache sync.Map // map[binn.BinnType]decodeFunc
+var decoderCache sync.Map // map[binn.Type]decodeFunc
 
 type readLen int
 
@@ -42,12 +40,12 @@ func decode(reader io.Reader, v interface{}) error {
 	return nil
 }
 
-func decodeStorage(containerType binn.BinnType, reader io.Reader, v interface{}) error {
+func decodeStorage(containerType binn.Type, reader io.Reader, v interface{}) error {
 	decoder := loadDecodeFunc(containerType)
 	return decoder(reader, v)
 }
 
-func decodeItem(rt reflect.Type, btype binn.BinnType, bval []byte) (interface{}, error) {
+func decodeItem(rt reflect.Type, btype binn.Type, bval []byte) (interface{}, error) {
 	var v interface{}
 	var err error
 
@@ -59,23 +57,23 @@ func decodeItem(rt reflect.Type, btype binn.BinnType, bval []byte) (interface{},
 	case binn.False:
 		return false, nil
 	case binn.Uint8Type:
-		v = DecodeUint8(bval)
+		v = Uint8(bval)
 	case binn.Uint16Type:
-		v = DecodeUint16(bval)
+		v = Uint16(bval)
 	case binn.Uint32Type:
-		v = DecodeUint32(bval)
+		v = Uint32(bval)
 	case binn.Uint64Type:
-		v = DecodeUint64(bval)
+		v = Uint64(bval)
 	case binn.Int8Type:
-		v = DecodeInt8(bval)
+		v = Int8(bval)
 	case binn.Int16Type:
-		v = DecodeInt16(bval)
+		v = Int16(bval)
 	case binn.Int32Type:
-		v = DecodeInt32(bval)
+		v = Int32(bval)
 	case binn.Int64Type:
-		v = DecodeInt64(bval)
+		v = Int64(bval)
 	case binn.StringType:
-		v = DecodeString(bval[:len(bval)-1])
+		v = String(bval[:len(bval)-1])
 	case binn.BlobType:
 		v = bval
 	case binn.ListType:
@@ -84,9 +82,6 @@ func decodeItem(rt reflect.Type, btype binn.BinnType, bval []byte) (interface{},
 		_, wasReadLen, _ := readSize(br)
 		cnt, wasReadCnt, _ := readSize(br)
 		wasRead := wasReadLen + wasReadCnt
-
-		//et := reflect.TypeOf(rt)
-		//l := reflect.MakeSlice(reflect.SliceOf(et), 0, cnt)
 
 		err = decodeListItems(br, &l, len(bval)-int(wasRead), wasRead, cnt)
 		if err != nil {
@@ -139,14 +134,14 @@ func decodeItem(rt reflect.Type, btype binn.BinnType, bval []byte) (interface{},
 	return v, nil
 }
 
-func loadDecodeFunc(bt binn.BinnType) decodeFunc {
+func loadDecodeFunc(bt binn.Type) decodeFunc {
 	if fi, ok := decoderCache.Load(bt); ok {
 		return fi.(decodeFunc)
 	}
 
 	var (
 		wg sync.WaitGroup
-		f decodeFunc
+		f  decodeFunc
 	)
 	wg.Add(1)
 	fi, loaded := decoderCache.LoadOrStore(bt, decodeFunc(func(reader io.Reader, v interface{}) error {
@@ -163,7 +158,7 @@ func loadDecodeFunc(bt binn.BinnType) decodeFunc {
 	return f
 }
 
-func newTypeDecoder(bt binn.BinnType) decodeFunc {
+func newTypeDecoder(bt binn.Type) decodeFunc {
 	switch bt {
 	case binn.ListType:
 		return decodeList
@@ -203,7 +198,7 @@ func newTypeDecoder(bt binn.BinnType) decodeFunc {
 		value := valuePtr.Elem()
 
 		if !value.CanSet() {
-			return errors.New("value can't be set")
+			return ErrCantSetValue
 		}
 
 		bval, err := readValue(bt, reader)

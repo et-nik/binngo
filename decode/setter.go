@@ -1,7 +1,6 @@
 package decode
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -9,7 +8,7 @@ import (
 	"github.com/et-nik/binngo/binn"
 )
 
-var kindMapper = map[binn.BinnType]reflect.Kind{
+var kindMapper = map[binn.Type]reflect.Kind{
 	binn.Int8Type:   reflect.Int8,
 	binn.Int16Type:  reflect.Int16,
 	binn.Int32Type:  reflect.Int32,
@@ -21,7 +20,7 @@ var kindMapper = map[binn.BinnType]reflect.Kind{
 	binn.StringType: reflect.String,
 }
 
-func addSliceItem(btype binn.BinnType, bval []byte, v interface{}) error {
+func addSliceItem(btype binn.Type, bval []byte, v interface{}) error {
 	value := reflect.ValueOf(v).Elem()
 
 	var err error
@@ -36,9 +35,6 @@ func addSliceItem(btype binn.BinnType, bval []byte, v interface{}) error {
 		return err
 	}
 
-	//kk := value.Type().Elem().Kind()
-	//_ = kk
-
 	if !value.CanSet() {
 		return ErrCantSetValue
 	}
@@ -50,7 +46,7 @@ func addSliceItem(btype binn.BinnType, bval []byte, v interface{}) error {
 	return nil
 }
 
-func addMapItem(k interface{}, bt binn.BinnType, bval []byte, v interface{}) error {
+func addMapItem(k interface{}, bt binn.Type, bval []byte, v interface{}) error {
 	valuePtr := reflect.ValueOf(v)
 	value := valuePtr.Elem()
 
@@ -71,7 +67,7 @@ func addMapItem(k interface{}, bt binn.BinnType, bval []byte, v interface{}) err
 	return nil
 }
 
-func addObjectItem(key string, btype binn.BinnType, bval []byte, v interface{}) error {
+func addObjectItem(key string, btype binn.Type, bval []byte, v interface{}) error {
 	kind := reflect.ValueOf(v).Elem().Kind()
 
 	if kind == reflect.Interface {
@@ -90,7 +86,7 @@ func addObjectItem(key string, btype binn.BinnType, bval []byte, v interface{}) 
 	return nil
 }
 
-func addObjectItemToStruct(k string, bt binn.BinnType, bval []byte, v interface{}) error {
+func addObjectItemToStruct(k string, bt binn.Type, bval []byte, v interface{}) error {
 	value := reflect.ValueOf(v).Elem()
 
 	if value.Kind() == reflect.Interface {
@@ -112,7 +108,7 @@ func addObjectItemToStruct(k string, bt binn.BinnType, bval []byte, v interface{
 		field = reflect.Indirect(value.FieldByName(fieldName))
 
 		if !field.IsValid() {
-			return errors.New("invalid struct value")
+			return ErrInvalidStructValue
 		}
 	}
 
@@ -133,10 +129,9 @@ func addObjectItemToStruct(k string, bt binn.BinnType, bval []byte, v interface{
 	return nil
 }
 
-
 func findFieldNameByTag(key string, rt reflect.Type) (string, error) {
 	if rt.Kind() != reflect.Struct {
-		return "", errors.New("invalid item")
+		return "", ErrInvalidItem
 	}
 
 	for i := 0; i < rt.NumField(); i++ {
@@ -147,5 +142,5 @@ func findFieldNameByTag(key string, rt reflect.Type) (string, error) {
 		}
 	}
 
-	return "", errors.New("item not found")
+	return "", ErrItemNotFound
 }

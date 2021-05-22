@@ -80,4 +80,4 @@ const (
 	BMP  = 0xD004
 )
 
-type BinnType int
+type Type int

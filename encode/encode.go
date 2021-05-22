@@ -2,7 +2,6 @@ package encode
 
 import (
 	"encoding"
-	"fmt"
 	"reflect"
 	"sync"
 
@@ -21,11 +20,11 @@ func marshal(v interface{}) ([]byte, error) {
 	rv := reflect.ValueOf(v)
 
 	if !rv.IsValid() {
-		return nil, fmt.Errorf("Invalid value")
+		return nil, ErrInvalidValue
 	}
 
 	if !rv.IsValid() {
-		return nil, fmt.Errorf("Invalid value")
+		return nil, ErrInvalidValue
 	}
 
 	enc := loadEncodeFunc(rv.Type())
@@ -67,9 +66,8 @@ func newTypeEncoder(t reflect.Type) encoderFunc {
 		return func(v reflect.Value) ([]byte, error) {
 			if v.Bool() {
 				return []byte{binn.True}, nil
-			} else {
-				return []byte{binn.False}, nil
 			}
+			return []byte{binn.False}, nil
 		}
 	case reflect.Struct:
 		return newStructEncoder(t)
@@ -87,8 +85,8 @@ func newTypeEncoder(t reflect.Type) encoderFunc {
 		return func(v reflect.Value) ([]byte, error) {
 			var bytes []byte
 
-			bytes = append(bytes, EncodeUint8(binn.StringType)...)
-			bytes = append(bytes, EncodeString(v.String())...)
+			bytes = append(bytes, Uint8(binn.StringType)...)
+			bytes = append(bytes, String(v.String())...)
 			bytes = append(bytes, 0x00)
 
 			return bytes, nil
@@ -97,8 +95,8 @@ func newTypeEncoder(t reflect.Type) encoderFunc {
 		return func(v reflect.Value) ([]byte, error) {
 			var bytes []byte
 
-			bytes = append(bytes, EncodeUint8(uint8(detectIntType(int(v.Int()))))...)
-			bytes = append(bytes, EncodeInt(int(v.Int()))...)
+			bytes = append(bytes, Uint8(uint8(detectIntType(int(v.Int()))))...)
+			bytes = append(bytes, Int(int(v.Int()))...)
 
 			return bytes, nil
 		}
@@ -106,8 +104,8 @@ func newTypeEncoder(t reflect.Type) encoderFunc {
 		return func(v reflect.Value) ([]byte, error) {
 			var bytes []byte
 
-			bytes = append(bytes, EncodeUint8(uint8(detectUintType(uint(v.Uint()))))...)
-			bytes = append(bytes, EncodeUint(uint(v.Uint()))...)
+			bytes = append(bytes, Uint8(uint8(detectUintType(uint(v.Uint()))))...)
+			bytes = append(bytes, Uint(uint(v.Uint()))...)
 
 			return bytes, nil
 		}
@@ -115,8 +113,8 @@ func newTypeEncoder(t reflect.Type) encoderFunc {
 		return func(v reflect.Value) ([]byte, error) {
 			var bytes []byte
 
-			bytes = append(bytes, EncodeUint8(binn.Float32Type)...)
-			bytes = append(bytes, EncodeFloat32(float32(v.Float()))...)
+			bytes = append(bytes, Uint8(binn.Float32Type)...)
+			bytes = append(bytes, Float32(float32(v.Float()))...)
 
 			return bytes, nil
 		}
@@ -124,8 +122,8 @@ func newTypeEncoder(t reflect.Type) encoderFunc {
 		return func(v reflect.Value) ([]byte, error) {
 			var bytes []byte
 
-			bytes = append(bytes, EncodeUint8(binn.Float64Type)...)
-			bytes = append(bytes, EncodeFloat64(v.Float())...)
+			bytes = append(bytes, Uint8(binn.Float64Type)...)
+			bytes = append(bytes, Float64(v.Float())...)
 
 			return bytes, nil
 		}

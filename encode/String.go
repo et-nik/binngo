@@ -7,10 +7,10 @@ import (
 	"github.com/et-nik/binngo/binn"
 )
 
-func EncodeString(s string) []byte {
+func String(s string) []byte {
 	var t []byte
 
-	t = append(t, EncodeSize(len(s), false)...)
+	t = append(t, Size(len(s), false)...)
 	t = append(t, []byte(s)...)
 
 	return t
@@ -30,5 +30,5 @@ func textMarshalerEncoder(v reflect.Value) ([]byte, error) {
 		return nil, err
 	}
 
-	return EncodeString(string(b)), nil
+	return String(string(b)), nil
 }

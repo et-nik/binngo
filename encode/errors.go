@@ -1,6 +1,13 @@
 package encode
 
-import "reflect"
+import (
+	"errors"
+	"reflect"
+)
+
+var (
+	ErrInvalidValue = errors.New("invalid value")
+)
 
 type UnsupportedTypeError struct {
 	Type reflect.Type

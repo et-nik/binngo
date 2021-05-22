@@ -57,5 +57,5 @@ func readMapKey(reader io.Reader) (int, readLen, error) {
 		return 0, 0, err
 	}
 
-	return int(DecodeInt32(bk)), 4, nil
+	return int(Int32(bk)), 4, nil
 }

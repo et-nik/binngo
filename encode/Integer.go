@@ -9,41 +9,41 @@ import (
 
 type intType uint8
 
-func EncodeUint(v uint) []byte {
+func Uint(v uint) []byte {
 	switch detectUintType(v) {
 	case binn.Uint8Type:
-		return EncodeUint8(uint8(v))
+		return Uint8(uint8(v))
 	case binn.Uint16Type:
-		return EncodeUint16(uint16(v))
+		return Uint16(uint16(v))
 	case binn.Uint32Type:
-		return EncodeUint32(uint32(v))
+		return Uint32(uint32(v))
 	default:
-		return EncodeUint64(uint64(v))
+		return Uint64(uint64(v))
 	}
 }
 
-func EncodeInt(v int) []byte {
+func Int(v int) []byte {
 	t := detectIntType(v)
 
 	result := []byte{}
 
 	switch t {
 	case binn.Int8Type:
-		result = EncodeInt8(int8(v))
+		result = Int8(int8(v))
 	case binn.Uint8Type:
-		result = EncodeUint8(uint8(v))
+		result = Uint8(uint8(v))
 	case binn.Int16Type:
-		result = EncodeInt16(int16(v))
+		result = Int16(int16(v))
 	case binn.Uint16Type:
-		result = EncodeUint16(uint16(v))
+		result = Uint16(uint16(v))
 	case binn.Int32Type:
-		result = EncodeInt32(int32(v))
+		result = Int32(int32(v))
 	case binn.Uint32Type:
-		result = EncodeUint32(uint32(v))
+		result = Uint32(uint32(v))
 	case binn.Int64Type:
-		result = EncodeInt64(int64(v))
+		result = Int64(int64(v))
 	case binn.Uint64Type:
-		result = EncodeUint64(uint64(v))
+		result = Uint64(uint64(v))
 	}
 
 	return result
@@ -81,12 +81,12 @@ func detectIntType(v int) intType {
 	if t == binn.Int64Type ||
 		t == binn.Int32Type ||
 		t == binn.Int16Type {
-
-		if v >= math.MinInt8 {
+		switch {
+		case v >= math.MinInt8:
 			t = binn.Int8Type
-		} else if v >= math.MinInt16 {
+		case v >= math.MinInt16:
 			t = binn.Int16Type
-		} else if v >= math.MinInt32 {
+		case v >= math.MinInt32:
 			t = binn.Int32Type
 		}
 	}
@@ -94,12 +94,12 @@ func detectIntType(v int) intType {
 	if t == binn.Uint64Type ||
 		t == binn.Uint32Type ||
 		t == binn.Uint16Type {
-
-		if v <= math.MaxUint8 {
+		switch {
+		case v <= math.MaxUint8:
 			t = binn.Uint8Type
-		} else if v <= math.MaxUint16 {
+		case v <= math.MaxUint16:
 			t = binn.Uint16Type
-		} else if v <= math.MaxUint32 {
+		case v <= math.MaxUint32:
 			t = binn.Uint32Type
 		}
 	}
@@ -107,15 +107,15 @@ func detectIntType(v int) intType {
 	return intType(t)
 }
 
-func EncodeInt8(v int8) []byte {
+func Int8(v int8) []byte {
 	return []byte{uint8(v)}
 }
 
-func EncodeUint8(v uint8) []byte {
+func Uint8(v uint8) []byte {
 	return []byte{v}
 }
 
-func EncodeUint16(v uint16) []byte {
+func Uint16(v uint16) []byte {
 	t := make([]byte, 2)
 	binary.BigEndian.PutUint16(t, v)
 
@@ -125,7 +125,7 @@ func EncodeUint16(v uint16) []byte {
 	return r
 }
 
-func EncodeInt16(v int16) []byte {
+func Int16(v int16) []byte {
 	t := make([]byte, 2)
 	binary.BigEndian.PutUint16(t, uint16(v))
 
@@ -135,7 +135,7 @@ func EncodeInt16(v int16) []byte {
 	return r
 }
 
-func EncodeUint32(v uint32) []byte {
+func Uint32(v uint32) []byte {
 	t := make([]byte, 4)
 	binary.BigEndian.PutUint32(t, v)
 
@@ -145,7 +145,7 @@ func EncodeUint32(v uint32) []byte {
 	return r
 }
 
-func EncodeInt32(v int32) []byte {
+func Int32(v int32) []byte {
 	t := make([]byte, 4)
 	binary.BigEndian.PutUint32(t, uint32(v))
 
@@ -155,22 +155,21 @@ func EncodeInt32(v int32) []byte {
 	return r
 }
 
-
-func EncodeUint64(v uint64) []byte {
+func Uint64(v uint64) []byte {
 	t := make([]byte, 8)
 	binary.BigEndian.PutUint64(t, v)
 
 	return t
 }
 
-func EncodeInt64(v int64) []byte {
+func Int64(v int64) []byte {
 	t := make([]byte, 8)
 	binary.BigEndian.PutUint64(t, uint64(v))
 
 	return t
 }
 
-func EncodeSize(size int, totalSize bool) []byte {
+func Size(size int, totalSize bool) []byte {
 	sz := size
 
 	if totalSize {
@@ -179,13 +178,13 @@ func EncodeSize(size int, totalSize bool) []byte {
 
 	if sz <= math.MaxInt8 {
 		return []byte{byte(sz)}
-	} else {
-		if totalSize {
-			sz += 3
-		}
-
-		return encodeSize32(sz)
 	}
+
+	if totalSize {
+		sz += 3
+	}
+
+	return encodeSize32(sz)
 }
 
 func encodeSize32(s int) []byte {

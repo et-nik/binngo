@@ -189,14 +189,3 @@ func TestListInterface(t *testing.T) {
 		's', 't', 'r', 'i', 'n', 'g', 0x00, 	// [data] null terminated
 	}, result)
 }
-
-//func TestListWitCycle(t *testing.T) {
-//	var arr1 []something
-//	arr1 = append(arr1, "string")
-//	arr1 = append(arr1, &arr1)
-//
-//	result, err := Marshal(arr1)
-//
-//	assert.Nil(t, result)
-//	assert.NotNil(t, err)
-//}

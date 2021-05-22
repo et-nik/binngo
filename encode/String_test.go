@@ -17,8 +17,21 @@ func Test(t *testing.T) {
 			[]byte{binn.StringType, 4, 't', 'e', 's', 't', 0x00},
 		},
 		{
-			"longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglong",
-			[]byte{binn.StringType, 0x80, 0x00, 0x00, 0xd0, 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 0x00},
+			"longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglong" +
+				"longlonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglonglong" +
+				"longlonglonglonglong",
+			[]byte{binn.StringType, 0x80, 0x00, 0x00, 0xd0, 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g',
+				'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g',
+				'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g',
+				'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g',
+				'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g',
+				'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g',
+				'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g',
+				'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g',
+				'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g',
+				'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g',
+				'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g', 'l', 'o', 'n', 'g',
+				0x00},
 		},
 	}
 

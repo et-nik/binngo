@@ -1,5 +1,8 @@
 BinnGo
 =======================
+[![Go Reference](https://pkg.go.dev/badge/github.com/et-nik/binngo.svg)](https://pkg.go.dev/github.com/et-nik/binngo)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/et-nik/binngo)
+[![Go Report Card](https://goreportcard.com/badge/github.com/et-nik/binngo)](https://goreportcard.com/report/github.com/et-nik/binngo)
 
 Binary serializer. Implements easy to use encoding and decoding of Binn. This package is very similar to the standard go
 encoder packages like `encoding/json`. BinnGo uses reflection.

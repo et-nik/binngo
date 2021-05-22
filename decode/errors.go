@@ -6,8 +6,11 @@ import (
 )
 
 var (
-	ErrUnknownType  = errors.New("unknown storage type")
-	ErrCantSetValue = errors.New("can't set value")
+	ErrUnknownType        = errors.New("unknown storage type")
+	ErrCantSetValue       = errors.New("can't set value")
+	ErrItemNotFound       = errors.New("item not found")
+	ErrInvalidItem        = errors.New("invalid item")
+	ErrInvalidStructValue = errors.New("invalid struct value")
 )
 
 type InvalidUnmarshalError struct {

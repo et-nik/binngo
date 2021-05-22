@@ -8,7 +8,7 @@ import (
 	"github.com/et-nik/binngo/encode"
 )
 
-func readValue(btype binn.BinnType, reader io.Reader) ([]byte, error) {
+func readValue(btype binn.Type, reader io.Reader) ([]byte, error) {
 	tp := btype &^ binn.StorageTypeMask
 
 	var readingSize int
@@ -41,7 +41,7 @@ func readValue(btype binn.BinnType, reader io.Reader) ([]byte, error) {
 
 		containerSize = s
 
-		bytes = append(bytes, encode.EncodeInt(int(s))...)
+		bytes = append(bytes, encode.Int(s)...)
 
 		readingSize = containerSize - 1 - int(l) // minus container type byte and size byte
 	default:
@@ -64,7 +64,7 @@ func readValue(btype binn.BinnType, reader io.Reader) ([]byte, error) {
 	return bytes, nil
 }
 
-func readType(reader io.Reader) (binn.BinnType, readLen, error) {
+func readType(reader io.Reader) (binn.Type, readLen, error) {
 	var bt = make([]byte, 1)
 
 	_, err := reader.Read(bt)
@@ -72,7 +72,7 @@ func readType(reader io.Reader) (binn.BinnType, readLen, error) {
 		return binn.Null, 0, fmt.Errorf("failed to read type: %w", err)
 	}
 
-	return DecodeType(bt), 1, nil
+	return Type(bt), 1, nil
 }
 
 func readSize(reader io.Reader) (int, readLen, error) {
@@ -84,7 +84,7 @@ func readSize(reader io.Reader) (int, readLen, error) {
 
 	read := 1
 
-	sz := int(DecodeUint8(bsz))
+	sz := int(Uint8(bsz))
 
 	if sz > maxOneByteSize {
 		var bszOtherBytes = make([]byte, 3)
@@ -93,9 +93,9 @@ func readSize(reader io.Reader) (int, readLen, error) {
 			return 0, 0, fmt.Errorf("failed to read long size: %w", err)
 		}
 		read += 3
-		sz = sz ^ 0x80000000
+		sz ^= 0x80000000
 
-		sz = int(DecodeUint32([]byte{
+		sz = int(Uint32([]byte{
 			byte(sz),
 			bszOtherBytes[0],
 			bszOtherBytes[1],
