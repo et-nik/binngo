@@ -108,6 +108,15 @@ func TestEncodeInt16(t *testing.T) {
 	assert.Equal(t, []byte{binn.Int16Type, 0xFC, 0xE0}, result)
 }
 
+func TestEncodeUint64(t *testing.T) {
+	v := 1099511892096
+
+	result, err := encode.Marshal(v)
+
+	assert.Nil(t, err)
+	assert.Equal(t, []byte{binn.Uint64Type, 0x00, 0x00, 0x01, 0x00, 0x00, 0x04, 0x08, 0x80}, result)
+}
+
 func TestEncodeString(t *testing.T) {
 	v := "test"
 
@@ -139,7 +148,6 @@ func TestEncodeList(t *testing.T) {
 
 func TestListInsideMap(t *testing.T) {
 	v := map[int][]int{
-		1: {123},
 		2: {-12345, 6789},
 	}
 
@@ -148,15 +156,8 @@ func TestListInsideMap(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, []byte{
 		binn.MapType,				// [type] list (container)
-		0x19,						// [size] container total size
-		0x02,						// [count] items
-		0x00, 0x00, 0x00, 0x01, 	// key
-
-			binn.ListType,			// [type] list (container)
-			0x05, 					// [size] list total size
-			0x01, 					// [count] list items
-			binn.Uint8Type,			// [type] = uint8
-			0x7B,					// [data] (123)
+		0x10,						// [size] container total size
+		0x01,						// [count] items
 
 		0x00, 0x00, 0x00, 0x02, 	// key
 
@@ -187,5 +188,38 @@ func TestListInterface(t *testing.T) {
 		binn.StringType,						// [type] = string
 		0x06,									// [size] string len,
 		's', 't', 'r', 'i', 'n', 'g', 0x00, 	// [data] null terminated
+	}, result)
+}
+
+func TestStruct(t *testing.T) {
+	// Arrange
+	type obj struct {
+		Var1 int64          `binn:"object-0"`
+		Var2 string         `binn:"object-1"`
+		Var3 map[int]string `binn:"object-2-innerMap"`
+	}
+	val := obj{1099511892096, "string", map[int]string{-20: "innerMap -20"}}
+
+	// Act
+	result, err := encode.Marshal(val)
+
+	// Assert
+	assert.Nil(t, err)
+	assert.Equal(t, []byte{
+		0xe2,																			// [type] object
+		0x4f,																			// [size]
+		0x03, 																			// [count]
+
+		0x08, 'o', 'b', 'j', 'e', 'c', 't', '-', '0',  									// [key]
+		0x80, 0x00, 0x00, 0x01, 0x00, 0x00, 0x04, 0x08, 0x80,							// [value] (1099511892096)
+
+		0x08, 'o', 'b', 'j', 'e', 'c', 't', '-', '1',  									// key
+		0xa0, 0x06, 's', 't', 'r', 'i', 'n', 'g', 0x00,									// [type] string, [value]
+
+		0x11, 'o', 'b', 'j', 'e', 'c', 't', '-', '2', '-', 'i', 'n', 'n', 'e', 'r', 'M', 'a', 'p',
+		0xE1, 0x16, 0x01, 																// [type] map, [size], [count]
+		0xff, 0xff, 0xff, 0xec, 														// [key] -20
+		0xa0, 0x0c, 'i', 'n', 'n', 'e', 'r', 'M', 'a', 'p', ' ', '-', '2', '0', 0x00,
+
 	}, result)
 }

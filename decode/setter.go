@@ -47,12 +47,13 @@ func addSliceItem(btype binn.Type, bval []byte, v interface{}) error {
 }
 
 func addMapItem(k interface{}, bt binn.Type, bval []byte, v interface{}) error {
-	valuePtr := reflect.ValueOf(v)
-	value := valuePtr.Elem()
+	value := reflect.ValueOf(v).Elem()
 
 	var err error
 
-	if value.Kind() != reflect.Map {
+	kind := value.Kind()
+
+	if kind != reflect.Map {
 		return &UnknownValueError{reflect.Map, value.Kind()}
 	}
 
@@ -60,6 +61,10 @@ func addMapItem(k interface{}, bt binn.Type, bval []byte, v interface{}) error {
 
 	if err != nil {
 		return fmt.Errorf("failed to add map item: %w", err)
+	}
+
+	if !value.CanSet() {
+		return ErrCantSetValue
 	}
 
 	value.SetMapIndex(reflect.ValueOf(k), reflect.ValueOf(val))

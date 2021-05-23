@@ -2,6 +2,7 @@ package encode
 
 import (
 	"reflect"
+	"strings"
 
 	"github.com/et-nik/binngo/binn"
 )
@@ -19,9 +20,12 @@ func (se *structEncoder) encode(v reflect.Value) ([]byte, error) {
 	dataBytes := []byte{}
 
 	for i := 0; i < v.NumField(); i++ {
-		dataBytes = append(dataBytes,
-			String(se.t.Field(i).Name)...,
-		)
+		keyName := strings.Split(se.t.Field(i).Tag.Get("binn"), ",")[0]
+		if keyName == "" {
+			keyName = se.t.Field(i).Name
+		}
+
+		dataBytes = append(dataBytes, String(keyName)...)
 
 		encodeValue := loadEncodeFunc(v.Field(i).Type())
 		val, err := encodeValue(v.Field(i))

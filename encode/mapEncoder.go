@@ -77,20 +77,24 @@ type mapEncoder struct {
 }
 
 func (me *mapEncoder) encode(v reflect.Value) ([]byte, error) {
-	dataBytes := []byte{}
+	var dataBytes []byte
 
-	keys := v.MapKeys()
+	iter := v.MapRange()
 
-	for _, key := range keys {
+	for iter.Next() {
+		key := iter.Key()
+		val := iter.Value()
+
 		dataBytes = append(dataBytes, Int32(int32(key.Int()))...)
 
-		encodedValue, err := me.elemEnc(v.MapIndex(key))
+		encodedValue, err := me.elemEnc(val)
 		if err != nil {
 			return nil, err
 		}
-
 		dataBytes = append(dataBytes, encodedValue...)
 	}
+
+	keys := v.MapKeys()
 
 	bytes := []byte{}
 

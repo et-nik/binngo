@@ -11,6 +11,8 @@ var (
 	ErrItemNotFound       = errors.New("item not found")
 	ErrInvalidItem        = errors.New("invalid item")
 	ErrInvalidStructValue = errors.New("invalid struct value")
+	ErrFailedToReadType   = errors.New("failed to read type")
+	ErrFailedToReadSize   = errors.New("failed to read size")
 )
 
 type InvalidUnmarshalError struct {

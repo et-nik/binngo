@@ -26,7 +26,7 @@ func readValue(btype binn.Type, reader io.Reader) ([]byte, error) {
 	case binn.StorageDWord:
 		readingSize = 4
 	case binn.StorageQWord:
-		readingSize = 9
+		readingSize = 8
 	case binn.StorageString:
 		dataSize, _, err := readSize(reader)
 		if err != nil {
@@ -69,7 +69,7 @@ func readType(reader io.Reader) (binn.Type, readLen, error) {
 
 	_, err := reader.Read(bt)
 	if err != nil {
-		return binn.Null, 0, fmt.Errorf("failed to read type: %w", err)
+		return binn.Null, 0, ErrFailedToReadType
 	}
 
 	return Type(bt), 1, nil
@@ -79,7 +79,7 @@ func readSize(reader io.Reader) (int, readLen, error) {
 	var bsz = make([]byte, 1)
 	_, err := reader.Read(bsz)
 	if err != nil {
-		return 0, 0, fmt.Errorf("failed to read size: %w", err)
+		return 0, 0, ErrFailedToReadSize
 	}
 
 	read := 1

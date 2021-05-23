@@ -2,6 +2,7 @@ package decode
 
 import (
 	"encoding/binary"
+	"math"
 
 	"github.com/et-nik/binngo/binn"
 )
@@ -40,6 +41,14 @@ func Int32(b []byte) int32 {
 
 func Int64(b []byte) int64 {
 	return int64(binary.BigEndian.Uint64(b))
+}
+
+func Float32(b []byte) float32 {
+	return math.Float32frombits(binary.BigEndian.Uint32(b))
+}
+
+func Float64(b []byte) float64 {
+	return math.Float64frombits(binary.BigEndian.Uint64(b))
 }
 
 func String(b []byte) string {

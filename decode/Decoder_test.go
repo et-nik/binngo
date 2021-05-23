@@ -66,9 +66,19 @@ func TestSimpleStorages(t *testing.T) {
 		expected  interface{}
 	}{
 		{
+			"nil",
+			[]byte{binn.Null},
+			nil,
+		},
+		{
 			"true",
 			[]byte{binn.True},
 			true,
+		},
+		{
+			"false",
+			[]byte{binn.False},
+			false,
 		},
 		{
 			"uint8",
@@ -89,6 +99,16 @@ func TestSimpleStorages(t *testing.T) {
 			"uint64",
 			[]byte{binn.Int64Type, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFE},
 			int64(9223372036854775806),
+		},
+		{
+			"float32",
+			[]byte{binn.Float32Type, 0x41, 0x82, 0xCA, 0xC1},
+			float32(16.349),
+		},
+		{
+			"float64",
+			[]byte{binn.Float64Type, 0x40, 0x30, 0x59, 0x96, 0x65, 0xF5, 0x11, 0x6B},
+			16.349951145487847,
 		},
 		{
 			"string",
@@ -209,4 +229,40 @@ func TestJSON(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.True(t, r)
+}
+
+func TestMapInObjectStruct(t *testing.T) {
+	b := []byte{
+		0xe2,																			// [type] object
+		0x4f,																			// [size]
+		0x03, 																			// [count]
+
+		0x08, 'o', 'b', 'j', 'e', 'c', 't', '-', '0',  									// [key]
+		0x80, 0x00, 0x00, 0x01, 0x00, 0x00, 0x04, 0x08, 0x80,							// [value] (1099511892096)
+
+		0x08, 'o', 'b', 'j', 'e', 'c', 't', '-', '1',  									// key
+		0xa0, 0x06, 's', 't', 'r', 'i', 'n', 'g', 0x00,									// [type] string, [value]
+
+		0x11, 'o', 'b', 'j', 'e', 'c', 't', '-', '2', '-', 'i', 'n', 'n', 'e', 'r', 'M', 'a', 'p',
+		0xE1, 0x16, 0x01, 																// [type] map, [size], [count]
+		0xff, 0xff, 0xff, 0xec, 														// [key] -20
+		0xa0, 0x0c, 'i', 'n', 'n', 'e', 'r', 'M', 'a', 'p', ' ', '-', '2', '0', 0x00,
+
+	}
+	type obj struct {
+		Var1 int64          `binn:"object-0"`
+		Var2 string         `binn:"object-1"`
+		Var3 map[int]string `binn:"object-2-innerMap"`
+	}
+	var v obj
+
+	err := decode.Unmarshal(b, &v)
+
+	if assert.Nil(t, err) {
+		assert.Equal(t, obj{
+			1099511892096,
+			"string",
+			map[int]string{-20: "innerMap -20"},
+		}, v)
+	}
 }

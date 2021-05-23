@@ -72,6 +72,10 @@ func decodeItem(rt reflect.Type, btype binn.Type, bval []byte) (interface{}, err
 		v = Int32(bval)
 	case binn.Int64Type:
 		v = Int64(bval)
+	case binn.Float32Type:
+		v = Float32(bval)
+	case binn.Float64Type:
+		v = Float64(bval)
 	case binn.StringType:
 		v = String(bval[:len(bval)-1])
 	case binn.BlobType:
@@ -90,15 +94,21 @@ func decodeItem(rt reflect.Type, btype binn.Type, bval []byte) (interface{}, err
 
 		return l, nil
 	case binn.MapType:
-		m := map[int]interface{}{}
 		br := bytes.NewReader(bval)
-		cnt, rl, _ := readSize(br)
-		err = decodeMapItems(br, &m, len(bval)-int(rl), rl, cnt)
+		sz, rlsize, _ := readSize(br)
+		cnt, rlcnt, _ := readSize(br)
+
+		mapType := reflect.MapOf(reflect.TypeOf(int(0)), rt.Elem())
+		ptr := reflect.New(mapType)
+		ptr.Elem().Set(reflect.MakeMap(mapType))
+		m := ptr.Interface()
+
+		err = decodeMapItems(br, m, sz, rlsize+rlcnt, cnt)
 		if err != nil {
 			return nil, err
 		}
 
-		return m, nil
+		return reflect.ValueOf(m).Elem().Interface(), nil
 	case binn.ObjectType:
 		var obj interface{}
 		if rt.Kind() == reflect.Interface {
@@ -184,11 +194,7 @@ func newTypeDecoder(bt binn.Type) decodeFunc {
 			return nil
 		}
 	case binn.Null:
-		return func(reader io.Reader, v interface{}) error {
-			valuePtr := reflect.ValueOf(v)
-			value := valuePtr.Elem()
-			value.Set(reflect.ValueOf(nil))
-
+		return func(_ io.Reader, _ interface{}) error {
 			return nil
 		}
 	}
