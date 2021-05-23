@@ -1,3 +1,4 @@
+// Package decode implements BINN decoding.
 package decode
 
 import (

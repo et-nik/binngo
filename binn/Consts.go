@@ -1,3 +1,4 @@
+// Package binn contains basic BINN format information and structure constants.
 package binn
 
 const (
