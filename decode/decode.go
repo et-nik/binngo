@@ -2,7 +2,6 @@ package decode
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"reflect"
 	"sync"
@@ -176,51 +175,14 @@ func newTypeDecoder(bt binn.Type) decodeFunc {
 		return decodeMap
 	case binn.ObjectType:
 		return decodeObject
-	case binn.True, binn.False:
-		return func(reader io.Reader, v interface{}) error {
-			valuePtr := reflect.ValueOf(v)
-			value := valuePtr.Elem()
-
-			if value.Kind() != reflect.Bool && value.Kind() != reflect.Interface {
-				return &UnknownValueError{reflect.Bool, value.Kind()}
-			}
-
-			if !value.CanSet() {
-				return ErrCantSetValue
-			}
-
-			value.Set(reflect.ValueOf(bt == binn.True))
-
-			return nil
-		}
 	case binn.Null:
 		return func(_ io.Reader, _ interface{}) error {
 			return nil
 		}
 	}
 
-	return func(reader io.Reader, v interface{}) error {
-		valuePtr := reflect.ValueOf(v)
-		value := valuePtr.Elem()
-
-		if !value.CanSet() {
-			return ErrCantSetValue
-		}
-
-		bval, err := readValue(bt, reader)
-		if err != nil {
-			return err
-		}
-
-		converted, err := decodeItem(value.Type(), bt, bval)
-		if err != nil {
-			return fmt.Errorf("storage can't be converted to type: %w", err)
-		}
-
-		value.Set(reflect.ValueOf(converted))
-
-		return nil
-	}
+	decoder := newValueDecoder(bt)
+	return decoder.DecodeValue
 }
 
 func convertToType(rt reflect.Type, val interface{}) (interface{}, error) {

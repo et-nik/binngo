@@ -33,7 +33,13 @@ func readValue(btype binn.Type, reader io.Reader) ([]byte, error) {
 			return nil, fmt.Errorf("failed to read string storage size: %w", err)
 		}
 		readingSize = dataSize + 1 // data size and null terminator
-	case binn.StorageBlob, binn.StorageContainer:
+	case binn.StorageBlob:
+		dataSize, _, err := readSize(reader)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read string storage size: %w", err)
+		}
+		readingSize = dataSize
+	case binn.StorageContainer:
 		s, l, err := readSize(reader)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read storage size: %w", err)

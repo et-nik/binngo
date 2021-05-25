@@ -86,6 +86,11 @@ func TestSimpleStorages(t *testing.T) {
 			uint8(33),
 		},
 		{
+			"int8",
+			[]byte{binn.Int8Type, 0xDF},
+			int8(-33),
+		},
+		{
 			"int16",
 			[]byte{binn.Int16Type, 0xCF, 0xC7},
 			int16(-12345),
@@ -94,6 +99,11 @@ func TestSimpleStorages(t *testing.T) {
 			"int32",
 			[]byte{binn.Int32Type, 0xFF, 0x43, 0x9E, 0xB2},
 			int32(-12345678),
+		},
+		{
+			"uint32",
+			[]byte{binn.Uint32Type, 0x00, 0xBC, 0x61, 0x4E},
+			int32(12345678),
 		},
 		{
 			"uint64",
@@ -114,6 +124,11 @@ func TestSimpleStorages(t *testing.T) {
 			"string",
 			[]byte{binn.StringType, 0x05, 'h', 'e', 'l', 'l', 'o', 0x00},
 			"hello",
+		},
+		{
+			"blob",
+			[]byte{binn.BlobType, 0x05, 0x00, 0x01, 0x02, 0x03, 0x04},
+			[]byte{0x00, 0x01, 0x02, 0x03, 0x04},
 		},
 	}
 
