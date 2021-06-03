@@ -1,13 +1,12 @@
 package decode_test
 
 import (
-	"encoding/json"
+	"errors"
 	"reflect"
 	"testing"
 
 	"github.com/et-nik/binngo/binn"
 	"github.com/et-nik/binngo/decode"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -236,16 +235,6 @@ func TestListOfObjects(t *testing.T) {
 	}
 }
 
-func TestJSON(t *testing.T) {
-	b := []byte{'t', 'r', 'u', 'e'}
-	var r bool
-
-	err := json.Unmarshal(b, &r)
-
-	assert.Nil(t, err)
-	assert.True(t, r)
-}
-
 func TestMapInObjectStruct(t *testing.T) {
 	b := []byte{
 		0xe2,																			// [type] object
@@ -279,5 +268,53 @@ func TestMapInObjectStruct(t *testing.T) {
 			"string",
 			map[int]string{-20: "innerMap -20"},
 		}, v)
+	}
+}
+
+type custom struct {
+	A int
+	B string
+}
+
+func (c *custom) UnmarshalBINN(b []byte) error {
+	var v []interface{}
+	err := decode.Unmarshal(b, &v)
+	if err != nil {
+		return err
+	}
+
+	aval, ok := v[0].(uint16)
+	if !ok {
+		return errors.New("Invalid type")
+	}
+
+	bval, ok := v[1].(string)
+	if !ok {
+		return errors.New("Invalid type")
+	}
+
+	c.A = int(aval)
+	c.B = bval
+
+	return nil
+}
+
+func TestDecodeCustom(t *testing.T) {
+	var v custom
+	b := []byte{
+		binn.ListType,
+		0x0f,									// [size] container total size
+		2,										// [count] items
+		binn.Uint16Type,						// [type] = uint16
+		0x01, 0xf4,								// [data] (500)
+		binn.StringType,						// [type] = string
+		0x06,									// [size] string len,
+		'c', 'u', 's', 't', 'o', 'm', 0x00, 	// [data] null terminated
+	}
+	err := decode.Unmarshal(b, &v)
+
+	if assert.Nil(t, err) {
+		assert.Equal(t, 500, v.A)
+		assert.Equal(t, "custom", v.B)
 	}
 }

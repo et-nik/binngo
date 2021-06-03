@@ -22,8 +22,9 @@ type readLen int
 
 func decode(reader io.Reader, v interface{}) error {
 	rv := reflect.ValueOf(v)
+	rt := reflect.TypeOf(v)
 	if rv.Kind() != reflect.Ptr || rv.IsNil() {
-		return &InvalidUnmarshalError{reflect.TypeOf(v)}
+		return &InvalidUnmarshalError{rt}
 	}
 
 	containerType, _, err := readType(reader)

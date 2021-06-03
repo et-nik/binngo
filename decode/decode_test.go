@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/et-nik/binngo/binn"
-
 	"github.com/stretchr/testify/assert"
 )
 

@@ -13,8 +13,13 @@ type encoderFunc func(v reflect.Value) ([]byte, error)
 var encoderCache sync.Map // map[reflect.Type]encoderFunc
 
 var (
+	marshalerType     = reflect.TypeOf((*Marshaler)(nil)).Elem()
 	textMarshalerType = reflect.TypeOf((*encoding.TextMarshaler)(nil)).Elem()
 )
+
+type Marshaler interface {
+	MarshalBINN() ([]byte, error)
+}
 
 func marshal(v interface{}) ([]byte, error) {
 	rv := reflect.ValueOf(v)
@@ -57,6 +62,9 @@ func loadEncodeFunc(t reflect.Type) encoderFunc {
 }
 
 func newTypeEncoder(t reflect.Type) encoderFunc {
+	if t.Implements(marshalerType) {
+		return marshalerEncoder
+	}
 	if t.Implements(textMarshalerType) {
 		return textMarshalerEncoder
 	}
@@ -136,4 +144,20 @@ func newTypeEncoder(t reflect.Type) encoderFunc {
 	return func(v reflect.Value) ([]byte, error) {
 		return nil, &UnsupportedTypeError{t}
 	}
+}
+
+func marshalerEncoder(v reflect.Value) ([]byte, error) {
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return []byte{0x00}, nil
+	}
+	m, ok := v.Interface().(Marshaler)
+	if !ok {
+		return []byte{0x00}, nil
+	}
+	b, err := m.MarshalBINN()
+	if err != nil {
+		return nil, &MarshalerError{v.Type(), err, "MarshalBINN"}
+	}
+
+	return b, nil
 }

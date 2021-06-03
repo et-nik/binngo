@@ -204,22 +204,52 @@ func TestStruct(t *testing.T) {
 	result, err := encode.Marshal(val)
 
 	// Assert
-	assert.Nil(t, err)
-	assert.Equal(t, []byte{
-		0xe2,																			// [type] object
-		0x4f,																			// [size]
-		0x03, 																			// [count]
+	if assert.Nil(t, err) {
+		assert.Equal(t, []byte{
+			0xe2,																			// [type] object
+			0x4f,																			// [size]
+			0x03, 																			// [count]
 
-		0x08, 'o', 'b', 'j', 'e', 'c', 't', '-', '0',  									// [key]
-		0x80, 0x00, 0x00, 0x01, 0x00, 0x00, 0x04, 0x08, 0x80,							// [value] (1099511892096)
+			0x08, 'o', 'b', 'j', 'e', 'c', 't', '-', '0',  									// [key]
+			0x80, 0x00, 0x00, 0x01, 0x00, 0x00, 0x04, 0x08, 0x80,							// [value] (1099511892096)
 
-		0x08, 'o', 'b', 'j', 'e', 'c', 't', '-', '1',  									// key
-		0xa0, 0x06, 's', 't', 'r', 'i', 'n', 'g', 0x00,									// [type] string, [value]
+			0x08, 'o', 'b', 'j', 'e', 'c', 't', '-', '1',  									// key
+			0xa0, 0x06, 's', 't', 'r', 'i', 'n', 'g', 0x00,									// [type] string, [value]
 
-		0x11, 'o', 'b', 'j', 'e', 'c', 't', '-', '2', '-', 'i', 'n', 'n', 'e', 'r', 'M', 'a', 'p',
-		0xE1, 0x16, 0x01, 																// [type] map, [size], [count]
-		0xff, 0xff, 0xff, 0xec, 														// [key] -20
-		0xa0, 0x0c, 'i', 'n', 'n', 'e', 'r', 'M', 'a', 'p', ' ', '-', '2', '0', 0x00,
+			0x11, 'o', 'b', 'j', 'e', 'c', 't', '-', '2', '-', 'i', 'n', 'n', 'e', 'r', 'M', 'a', 'p',
+			0xE1, 0x16, 0x01, 																// [type] map, [size], [count]
+			0xff, 0xff, 0xff, 0xec, 														// [key] -20
+			0xa0, 0x0c, 'i', 'n', 'n', 'e', 'r', 'M', 'a', 'p', ' ', '-', '2', '0', 0x00,
 
-	}, result)
+		}, result)
+	}
+}
+
+type custom struct {
+	A int
+	B string
+}
+
+func (c custom) MarshalBINN() ([]byte, error) {
+	v := []interface{}{c.A, c.B}
+	return encode.Marshal(v)
+}
+
+func TestEncodeCustom(t *testing.T) {
+	v := custom{500, "custom"}
+
+	result, err := encode.Marshal(v)
+
+	if assert.Nil(t, err) {
+		assert.Equal(t, []byte{
+			binn.ListType,
+			0x0f,									// [size] container total size
+			2,										// [count] items
+			binn.Uint16Type,						// [type] = uint16
+			0x01, 0xf4,								// [data] (500)
+			binn.StringType,						// [type] = string
+			0x06,									// [size] string len,
+			'c', 'u', 's', 't', 'o', 'm', 0x00, 	// [data] null terminated
+		}, result)
+	}
 }
