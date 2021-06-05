@@ -8,6 +8,7 @@ import (
 
 	"github.com/cstockton/go-conv"
 	"github.com/et-nik/binngo/binn"
+	"github.com/et-nik/binngo/encode"
 )
 
 const (
@@ -33,21 +34,28 @@ func decode(reader io.Reader, v interface{}) error {
 	}
 
 	if rt.Implements(unmarshalerType) && isStorageContainer(containerType) {
-		size, _, err := readSize(reader)
-		if err != nil {
-			return err
-		}
-		buf := make([]byte, size)
-
-		err = decodeUnmarshaler(buf, v)
-		if err != nil {
-			return err
-		}
-
-		return nil
+		return decodeUnmarshalerStorage(containerType, reader, v)
 	}
 
-	err = decodeStorage(containerType, reader, v)
+	return decodeStorage(containerType, reader, v)
+}
+
+func decodeUnmarshalerStorage(containerType binn.Type, reader io.Reader, v interface{}) error {
+	size, _, err := readSize(reader)
+	if err != nil {
+		return err
+	}
+	buf := make([]byte, size)
+	_, err = reader.Read(buf)
+	if err != nil {
+		return err
+	}
+	var data []byte
+	data = append(data, encode.Uint8(uint8(containerType))...)
+	data = append(data, encode.Size(size, true)...)
+	data = append(data, buf...)
+
+	err = decodeUnmarshaler(data, v)
 	if err != nil {
 		return err
 	}
