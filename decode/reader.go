@@ -70,6 +70,10 @@ func readValue(btype binn.Type, reader io.Reader) ([]byte, error) {
 	return bytes, nil
 }
 
+func isStorageContainer(btype binn.Type) bool {
+	return (btype &^ binn.StorageTypeMask) == binn.StorageContainer
+}
+
 func readType(reader io.Reader) (binn.Type, readLen, error) {
 	var bt = make([]byte, 1)
 

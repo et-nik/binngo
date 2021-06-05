@@ -32,6 +32,21 @@ func decode(reader io.Reader, v interface{}) error {
 		return err
 	}
 
+	if rt.Implements(unmarshalerType) && isStorageContainer(containerType) {
+		size, _, err := readSize(reader)
+		if err != nil {
+			return err
+		}
+		buf := make([]byte, size)
+
+		err = decodeUnmarshaler(buf, v)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
 	err = decodeStorage(containerType, reader, v)
 	if err != nil {
 		return err
