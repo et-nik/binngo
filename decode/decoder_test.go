@@ -3,12 +3,14 @@ package decode_test
 import (
 	"bytes"
 	"errors"
+	"os"
 	"reflect"
 	"testing"
 
 	"github.com/et-nik/binngo/binn"
 	"github.com/et-nik/binngo/decode"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUnknownValueError_ExpectedBool(t *testing.T) {
@@ -342,4 +344,32 @@ func TestDecodeCustomUsingDecoder(t *testing.T) {
 		assert.Equal(t, 500, v.A)
 		assert.Equal(t, "custom", v.B)
 	}
+}
+
+
+func TestDecodeReadDirContents(t *testing.T) {
+	b, err := os.ReadFile("../test/binary/read-dir.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	bytesReader := bytes.NewReader(b)
+	decoder := decode.NewDecoder(bytesReader)
+	var v []interface{}
+
+	err = decoder.Decode(&v)
+
+	require.NoError(t, err)
+	assert.Equal(t, 100, int(v[0].(uint8)))
+	require.IsType(t, v, v[2])
+	assert.Len(t, v[2], 8)
+	require.IsType(t, v, v[2].([]interface{})[0])
+	require.IsType(t, "", v[2].([]interface{})[0].([]interface{})[0])
+	assert.Equal(t, "directory", v[2].([]interface{})[0].([]interface{})[0])
+	assert.Equal(t, "file.json", v[2].([]interface{})[1].([]interface{})[0])
+	assert.Equal(t, "file.tar.gz", v[2].([]interface{})[2].([]interface{})[0])
+	assert.Equal(t, "file.txt", v[2].([]interface{})[3].([]interface{})[0])
+	assert.Equal(t, "file.zip", v[2].([]interface{})[4].([]interface{})[0])
+	assert.Equal(t, "local_repository", v[2].([]interface{})[5].([]interface{})[0])
+	assert.Equal(t, "raccoon.jpg", v[2].([]interface{})[6].([]interface{})[0])
+	assert.Equal(t, "symlink_to_file_txt", v[2].([]interface{})[7].([]interface{})[0])
 }

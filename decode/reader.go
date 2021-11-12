@@ -47,7 +47,7 @@ func readValue(btype binn.Type, reader io.Reader) ([]byte, error) {
 
 		containerSize = s
 
-		bytes = append(bytes, encode.Int(s)...)
+		bytes = append(bytes, encode.Size(s, false)...)
 
 		readingSize = containerSize - 1 - int(l) // minus container type byte and size byte
 	default:
@@ -79,7 +79,7 @@ func readType(reader io.Reader) (binn.Type, readLen, error) {
 
 	_, err := reader.Read(bt)
 	if err != nil {
-		return binn.Null, 0, ErrFailedToReadType
+		return binn.Null, 0, &FailedToReadTypeError{Previous: err}
 	}
 
 	return Type(bt), 1, nil
@@ -89,7 +89,7 @@ func readSize(reader io.Reader) (int, readLen, error) {
 	var bsz = make([]byte, 1)
 	_, err := reader.Read(bsz)
 	if err != nil {
-		return 0, 0, ErrFailedToReadSize
+		return 0, 0, &FailedToReadSizeError{err}
 	}
 
 	read := 1
@@ -103,7 +103,6 @@ func readSize(reader io.Reader) (int, readLen, error) {
 			return 0, 0, fmt.Errorf("failed to read long size: %w", err)
 		}
 		read += 3
-		sz ^= 0x80000000
 
 		sz = int(Uint32([]byte{
 			byte(sz),
@@ -111,6 +110,8 @@ func readSize(reader io.Reader) (int, readLen, error) {
 			bszOtherBytes[1],
 			bszOtherBytes[2],
 		}))
+
+		sz &= 0x7FFFFFFF
 	}
 
 	return sz, readLen(read), nil
