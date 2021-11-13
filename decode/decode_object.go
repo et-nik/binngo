@@ -52,18 +52,26 @@ func decodeObjectItems(reader io.Reader, v interface{}, size int, wasRead readLe
 
 func readObjectKey(reader io.Reader) (string, readLen, error) {
 	var bsz = make([]byte, 1)
-	_, err := reader.Read(bsz)
+	n, err := reader.Read(bsz)
 	if err != nil {
 		return "", 0, err
+	}
+
+	if n != 1 {
+		return "", readLen(n), ErrIncompleteRead
 	}
 
 	sz := int(Uint8(bsz))
 
 	var bkey = make([]byte, sz)
 
-	_, err = reader.Read(bkey)
+	n, err = reader.Read(bkey)
 	if err != nil {
 		return "", 0, err
+	}
+
+	if n != sz {
+		return "", readLen(n), ErrIncompleteRead
 	}
 
 	return String(bkey), readLen(sz + 1), nil

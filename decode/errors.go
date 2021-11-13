@@ -12,6 +12,7 @@ var (
 	ErrItemNotFound       = errors.New("item not found")
 	ErrInvalidItem        = errors.New("invalid item")
 	ErrInvalidStructValue = errors.New("invalid struct value")
+	ErrIncompleteRead     = errors.New("incomplete read")
 )
 
 type FailedToReadTypeError struct {

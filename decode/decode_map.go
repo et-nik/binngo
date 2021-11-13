@@ -52,9 +52,13 @@ func decodeMapItems(reader io.Reader, v interface{}, size int, wasRead readLen, 
 
 func readMapKey(reader io.Reader) (int, readLen, error) {
 	var bk = make([]byte, 4)
-	_, err := reader.Read(bk)
+	n, err := reader.Read(bk)
 	if err != nil {
 		return 0, 0, err
+	}
+
+	if n != 4 {
+		return 0, readLen(n), ErrIncompleteRead
 	}
 
 	return int(Int32(bk)), 4, nil

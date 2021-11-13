@@ -373,3 +373,41 @@ func TestDecodeReadDirContents(t *testing.T) {
 	assert.Equal(t, "raccoon.jpg", v[2].([]interface{})[6].([]interface{})[0])
 	assert.Equal(t, "symlink_to_file_txt", v[2].([]interface{})[7].([]interface{})[0])
 }
+
+type unmarshaller uint8
+
+func (u *unmarshaller) UnmarshalBINN(bytes []byte) error {
+	var v []uint8
+
+	err := decode.Unmarshal(bytes, &v)
+	if err != nil {
+		return err
+	}
+
+	*u = unmarshaller(v[0])
+
+	return nil
+}
+
+func TestDecodeUnmarshaller(t *testing.T) {
+	var v unmarshaller
+	b := []byte{0xE0, 0x05, 0x01, 0x20, 0x02}
+	bytesReader := bytes.NewReader(b)
+	decoder := decode.NewDecoder(bytesReader)
+
+	err := decoder.Decode(&v)
+
+	require.NoError(t, err)
+	assert.Equal(t, 2, int(v))
+}
+
+func TestDecodeUnmarshaller_WhenStrippedBytes_ExpectError(t *testing.T) {
+	var v unmarshaller
+	b := []byte{0xE0, 0x05, 0x01, 0x20}
+	bytesReader := bytes.NewReader(b)
+	decoder := decode.NewDecoder(bytesReader)
+
+	err := decoder.Decode(&v)
+
+	require.ErrorIs(t, err, decode.ErrIncompleteRead)
+}

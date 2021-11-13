@@ -41,18 +41,26 @@ func decode(reader io.Reader, v interface{}) error {
 }
 
 func decodeUnmarshalerStorage(containerType binn.Type, reader io.Reader, v interface{}) error {
-	size, _, err := readSize(reader)
+	size, ln, err := readSize(reader)
 	if err != nil {
 		return err
 	}
-	buf := make([]byte, size)
-	_, err = reader.Read(buf)
+
+	typeSize := len(encode.Int(int(containerType)))
+
+	buf := make([]byte, size-int(ln)-typeSize)
+	n, err := reader.Read(buf)
 	if err != nil {
 		return err
 	}
-	var data []byte
+
+	if n != len(buf) {
+		return ErrIncompleteRead
+	}
+
+	data := make([]byte, 0, size)
 	data = append(data, encode.Uint8(uint8(containerType))...)
-	data = append(data, encode.Size(size, true)...)
+	data = append(data, encode.Size(size, false)...)
 	data = append(data, buf...)
 
 	err = decodeUnmarshaler(data, v)
