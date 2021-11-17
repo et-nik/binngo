@@ -76,6 +76,7 @@ func decodeStorage(containerType binn.Type, reader io.Reader, v interface{}) err
 	return decoder(reader, v)
 }
 
+//nolint:funlen
 func decodeItem(rt reflect.Type, btype binn.Type, bval []byte) (interface{}, error) {
 	var v interface{}
 	var err error

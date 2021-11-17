@@ -7,9 +7,9 @@ linters:
     - dogsled
     - dupl
     - errcheck
-    # - exhaustive
+    - exportloopref
     - forbidigo
-    # - funlen
+    - funlen
     - gochecknoinits
     - gocognit
     - goconst
@@ -20,7 +20,6 @@ linters:
     - goerr113
     - gofmt
     - goimports
-    - golint
     - gomodguard
     - goprintffuncname
     - gosec
@@ -29,15 +28,14 @@ linters:
     - ineffassign
     - lll
     - makezero
-    - maligned
     - misspell
     - nakedret
     - nestif
     - noctx
     - nolintlint
     - prealloc
+    - revive
     - rowserrcheck
-    - scopelint
     - staticcheck
     - structcheck
     - stylecheck

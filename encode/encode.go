@@ -61,6 +61,7 @@ func loadEncodeFunc(t reflect.Type) encoderFunc {
 	return f
 }
 
+//nolint:funlen
 func newTypeEncoder(t reflect.Type) encoderFunc {
 	if t.Implements(marshalerType) {
 		return marshalerEncoder

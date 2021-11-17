@@ -99,7 +99,7 @@ func detectIntType(v int) intType {
 			t = binn.Uint8Type
 		case v <= math.MaxUint16:
 			t = binn.Uint16Type
-		case v <= math.MaxUint32:
+		case v <= math.MaxInt32:
 			t = binn.Uint32Type
 		}
 	}
@@ -188,7 +188,7 @@ func Size(size int, totalSize bool) []byte {
 }
 
 func encodeSize32(s int) []byte {
-	i := s | (1 << 31)
+	i := s | (-1 << 31)
 
 	b := make([]byte, 4)
 	binary.BigEndian.PutUint32(b, uint32(i))

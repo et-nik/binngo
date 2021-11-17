@@ -8,6 +8,7 @@ import (
 	"github.com/et-nik/binngo/encode"
 )
 
+//nolint:funlen
 func readValue(btype binn.Type, reader io.Reader) ([]byte, error) {
 	tp := btype &^ binn.StorageTypeMask
 
