@@ -248,7 +248,7 @@ func convertToKind(rk reflect.Kind, v interface{}) (interface{}, error) {
 	case reflect.Uint16:
 		return conv.Uint16(v)
 	case reflect.Uint32:
-		return conv.Int32(v)
+		return conv.Uint32(v)
 	case reflect.Uint64:
 		return conv.Uint64(v)
 	case reflect.Bool:
