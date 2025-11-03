@@ -60,13 +60,18 @@ func readValue(btype binn.Type, reader io.Reader) ([]byte, error) {
 	}
 
 	b := make([]byte, readingSize)
+	read := 0
 
-	_, err := reader.Read(b)
-	bytes = append(bytes, b...)
+	for read < readingSize {
+		n, err := reader.Read(b[read:])
+		if err != nil {
+			return nil, fmt.Errorf("failed to read storage: %w", err)
+		}
 
-	if err != nil {
-		return nil, fmt.Errorf("failed to read storage: %w", err)
+		read += n
 	}
+
+	bytes = append(bytes, b...)
 
 	return bytes, nil
 }
