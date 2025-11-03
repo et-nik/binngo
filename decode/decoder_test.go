@@ -28,11 +28,11 @@ func TestUnknownValueError_ExpectedBool(t *testing.T) {
 
 func TestUnknownValueError_ExpectedSlice(t *testing.T) {
 	b := []byte{
-		binn.ListType,	// [type] list (container)
-		0x05,			// [size] container total size
-		0x01,			// [count] items
-		0x20, 			// [type] = uint8
-		0x7B,			// [data] (123)
+		binn.ListType, // [type] list (container)
+		0x05,          // [size] container total size
+		0x01,          // [count] items
+		0x20,          // [type] = uint8
+		0x7B,          // [data] (123)
 	}
 	var r int
 
@@ -47,11 +47,11 @@ func TestUnknownValueError_ExpectedSlice(t *testing.T) {
 
 func TestInvalidCount(t *testing.T) {
 	b := []byte{
-		binn.ListType,	// [type] list (container)
-		0x05,			// [size] container total size
-		0x03,			// [count] items
-		0x20, 			// [type] = uint8
-		0x7B,			// [data] (123)
+		binn.ListType, // [type] list (container)
+		0x05,          // [size] container total size
+		0x03,          // [count] items
+		0x20,          // [type] = uint8
+		0x7B,          // [data] (123)
 	}
 	v := []int{}
 
@@ -63,9 +63,9 @@ func TestInvalidCount(t *testing.T) {
 
 func TestSimpleStorages(t *testing.T) {
 	tests := []struct {
-		name      string
-		binary    []byte
-		expected  interface{}
+		name     string
+		binary   []byte
+		expected interface{}
 	}{
 		{
 			"nil",
@@ -105,7 +105,7 @@ func TestSimpleStorages(t *testing.T) {
 		{
 			"uint32",
 			[]byte{binn.Uint32Type, 0x00, 0xBC, 0x61, 0x4E},
-			int32(12345678),
+			uint32(12345678),
 		},
 		{
 			"uint64",
@@ -146,19 +146,19 @@ func TestSimpleStorages(t *testing.T) {
 }
 
 func TestUnmashalObject(t *testing.T) {
-	b := []byte {
-		0xE2,           			// [type] object (container)
-		0x14,           			// [size] container total size
-		0x02,           			// [count] key/value pairs
+	b := []byte{
+		0xE2, // [type] object (container)
+		0x14, // [size] container total size
+		0x02, // [count] key/value pairs
 
-		0x02, 'i', 'd',     		// key
-		0x20,           			// [type] = uint8
-		0x01,           			// [data] (1)
+		0x02, 'i', 'd', // key
+		0x20, // [type] = uint8
+		0x01, // [data] (1)
 
-		0x04, 'n', 'a', 'm', 'e',   // key
-		0xA0,           			// [type] = string
-		0x04,           			// [size]
-		'J', 'o', 'h', 'n', 0x00,   // [data] (null terminated)
+		0x04, 'n', 'a', 'm', 'e', // key
+		0xA0,                     // [type] = string
+		0x04,                     // [size]
+		'J', 'o', 'h', 'n', 0x00, // [data] (null terminated)
 	}
 	type ts struct {
 		ID   uint8  `binn:"id"`
@@ -192,35 +192,35 @@ func TestUnmarshalStringObjectToMap(t *testing.T) {
 // https://github.com/liteserver/binn/blob/master/spec.md#a-list-of-objects
 func TestListOfObjects(t *testing.T) {
 	b := []byte{
-		0xE0,           			// [type] list (container)
-		0x2B,           			// [size] container total size
-		0x02,           			// [count] items
+		0xE0, // [type] list (container)
+		0x2B, // [size] container total size
+		0x02, // [count] items
 
-		0xE2,           			// [type] object (container)
-		0x14,           			// [size] container total size
-		0x02,           			// [count] key/value pairs
+		0xE2, // [type] object (container)
+		0x14, // [size] container total size
+		0x02, // [count] key/value pairs
 
-		0x02, 'i', 'd',     		// key
-		0x20,           			// [type] = uint8
-		0x01,           			// [data] (1)
+		0x02, 'i', 'd', // key
+		0x20, // [type] = uint8
+		0x01, // [data] (1)
 
-		0x04, 'n', 'a', 'm', 'e',   // key
-		0xA0,           			// [type] = string
-		0x04,           			// [size]
-		'J', 'o', 'h', 'n', 0x00,   // [data] (null terminated)
+		0x04, 'n', 'a', 'm', 'e', // key
+		0xA0,                     // [type] = string
+		0x04,                     // [size]
+		'J', 'o', 'h', 'n', 0x00, // [data] (null terminated)
 
-		0xE2,           			// [type] object (container)
-		0x14,           			// [size] container total size
-		0x02,          	 			// [count] key/value pairs
+		0xE2, // [type] object (container)
+		0x14, // [size] container total size
+		0x02, // [count] key/value pairs
 
-		0x02, 'i', 'd',         	// key
-		0x20,           			// [type] = uint8
-		0x02,           			// [data] (2)
+		0x02, 'i', 'd', // key
+		0x20, // [type] = uint8
+		0x02, // [data] (2)
 
-		0x04, 'n', 'a', 'm', 'e',   // key
-		0xA0,           			// [type] = string
-		0x04,           			// [size]
-		'E', 'r', 'i', 'c', 0x00,   // [data] (null terminated)
+		0x04, 'n', 'a', 'm', 'e', // key
+		0xA0,                     // [type] = string
+		0x04,                     // [size]
+		'E', 'r', 'i', 'c', 0x00, // [data] (null terminated)
 	}
 	type ts struct {
 		ID   uint8  `binn:"id"`
@@ -240,21 +240,20 @@ func TestListOfObjects(t *testing.T) {
 
 func TestMapInObjectStruct(t *testing.T) {
 	b := []byte{
-		0xe2,																			// [type] object
-		0x4f,																			// [size]
-		0x03, 																			// [count]
+		0xe2, // [type] object
+		0x4f, // [size]
+		0x03, // [count]
 
-		0x08, 'o', 'b', 'j', 'e', 'c', 't', '-', '0',  									// [key]
-		0x80, 0x00, 0x00, 0x01, 0x00, 0x00, 0x04, 0x08, 0x80,							// [value] (1099511892096)
+		0x08, 'o', 'b', 'j', 'e', 'c', 't', '-', '0', // [key]
+		0x80, 0x00, 0x00, 0x01, 0x00, 0x00, 0x04, 0x08, 0x80, // [value] (1099511892096)
 
-		0x08, 'o', 'b', 'j', 'e', 'c', 't', '-', '1',  									// key
-		0xa0, 0x06, 's', 't', 'r', 'i', 'n', 'g', 0x00,									// [type] string, [value]
+		0x08, 'o', 'b', 'j', 'e', 'c', 't', '-', '1', // key
+		0xa0, 0x06, 's', 't', 'r', 'i', 'n', 'g', 0x00, // [type] string, [value]
 
 		0x11, 'o', 'b', 'j', 'e', 'c', 't', '-', '2', '-', 'i', 'n', 'n', 'e', 'r', 'M', 'a', 'p',
-		0xE1, 0x16, 0x01, 																// [type] map, [size], [count]
-		0xff, 0xff, 0xff, 0xec, 														// [key] -20
+		0xE1, 0x16, 0x01, // [type] map, [size], [count]
+		0xff, 0xff, 0xff, 0xec, // [key] -20
 		0xa0, 0x0c, 'i', 'n', 'n', 'e', 'r', 'M', 'a', 'p', ' ', '-', '2', '0', 0x00,
-
 	}
 	type obj struct {
 		Var1 int64          `binn:"object-0"`
@@ -306,13 +305,13 @@ func TestDecodeCustom(t *testing.T) {
 	var v custom
 	b := []byte{
 		binn.ListType,
-		0x0f,									// [size] container total size
-		2,										// [count] items
-		binn.Uint16Type,						// [type] = uint16
-		0x01, 0xf4,								// [data] (500)
-		binn.StringType,						// [type] = string
-		0x06,									// [size] string len,
-		'c', 'u', 's', 't', 'o', 'm', 0x00, 	// [data] null terminated
+		0x0f,            // [size] container total size
+		2,               // [count] items
+		binn.Uint16Type, // [type] = uint16
+		0x01, 0xf4,      // [data] (500)
+		binn.StringType,                    // [type] = string
+		0x06,                               // [size] string len,
+		'c', 'u', 's', 't', 'o', 'm', 0x00, // [data] null terminated
 	}
 
 	err := decode.Unmarshal(b, &v)
@@ -327,13 +326,13 @@ func TestDecodeCustomUsingDecoder(t *testing.T) {
 	var v custom
 	b := []byte{
 		binn.ListType,
-		0x0f,									// [size] container total size
-		2,										// [count] items
-		binn.Uint16Type,						// [type] = uint16
-		0x01, 0xf4,								// [data] (500)
-		binn.StringType,						// [type] = string
-		0x06,									// [size] string len,
-		'c', 'u', 's', 't', 'o', 'm', 0x00, 	// [data] null terminated
+		0x0f,            // [size] container total size
+		2,               // [count] items
+		binn.Uint16Type, // [type] = uint16
+		0x01, 0xf4,      // [data] (500)
+		binn.StringType,                    // [type] = string
+		0x06,                               // [size] string len,
+		'c', 'u', 's', 't', 'o', 'm', 0x00, // [data] null terminated
 	}
 	bytesReader := bytes.NewReader(b)
 	decoder := decode.NewDecoder(bytesReader)
@@ -345,7 +344,6 @@ func TestDecodeCustomUsingDecoder(t *testing.T) {
 		assert.Equal(t, "custom", v.B)
 	}
 }
-
 
 func TestDecodeReadDirContents(t *testing.T) {
 	b, err := os.ReadFile("../test/binary/read-dir.bin")

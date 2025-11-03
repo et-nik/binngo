@@ -142,7 +142,7 @@ func newTypeEncoder(t reflect.Type) encoderFunc {
 		return newPtrEncoder(t)
 	}
 
-	return func(v reflect.Value) ([]byte, error) {
+	return func(_ reflect.Value) ([]byte, error) {
 		return nil, &UnsupportedTypeError{t}
 	}
 }

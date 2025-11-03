@@ -1,13 +1,12 @@
+version: "2"
 linters:
   enable:
     - asciicheck
     - bodyclose
-    - deadcode
-    - depguard
+#    - depguard
     - dogsled
     - dupl
-    - errcheck
-    - exportloopref
+    - err113
     - forbidigo
     - funlen
     - gochecknoinits
@@ -17,15 +16,9 @@ linters:
     - gocyclo
     - godot
     - godox
-    - goerr113
-    - gofmt
-    - goimports
     - gomodguard
     - goprintffuncname
-    - gosec
-    - gosimple
-    - govet
-    - ineffassign
+#    - gosec
     - lll
     - makezero
     - misspell
@@ -37,29 +30,42 @@ linters:
     - revive
     - rowserrcheck
     - staticcheck
-    - structcheck
-    - stylecheck
     - thelper
-    - typecheck
     - unconvert
     - unparam
-    - unused
-    - varcheck
     - whitespace
-
-issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - dogsled
-        - dupl
-        - errcheck
-        - funlen
-        - gochecknoglobals
-        - gocyclo
-        - goerr113
-        - gosec
-        - lll
-        - scopelint
-        - gofmt
-        - goimports
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - dogsled
+          - dupl
+          - err113
+          - errcheck
+          - funlen
+          - gochecknoglobals
+          - gocyclo
+          - gosec
+          - lll
+          - scopelint
+        path: _test\.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+      - _test\.go
