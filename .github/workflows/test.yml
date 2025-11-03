@@ -15,20 +15,21 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v6
         with:
           go-version: ${{ matrix.go-version }}
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
 
       - name: Set up dependencies
         run: go mod download
 
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v2
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: v1.43.0
+          version: v2.5.0
+          args: --timeout=10m
 
       - name: Test
         run: go test -v $(go list ./... | grep -v vendor)
